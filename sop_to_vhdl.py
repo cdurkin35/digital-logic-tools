@@ -42,7 +42,7 @@ def main():
             vhdl_term + " or "
         )  # Joins minterms into Sum of Products in proper VHDL code
     vhdl_equation = (
-        vhdl_equation[:-4] + ")"
+        vhdl_equation[:-4] + ");"
     )  # Removes extra 'or' at the end of the equation
     print(vhdl_equation)  # Prints to console final output
 
