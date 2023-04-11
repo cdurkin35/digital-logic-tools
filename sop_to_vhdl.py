@@ -1,6 +1,16 @@
-# This program takes in a Sum of Products equation, simplified or not, and given the variable names
-# it creates the VHDL Code necessary to implement this equation
+# os package is used to delete unused ".txt" files, allowing the program to declutter itself
 import os
+import time
+
+
+def loading(t, increment=0.1, dots=3):
+    t_end = time.time() + t
+    while time.time() < t_end:
+        print("\r               \r", end="")
+        for i in range(dots):
+            time.sleep(increment)
+            print(". ", end="")
+        time.sleep(increment)
 
 
 def main():
@@ -10,8 +20,7 @@ def main():
         "\n"
         + "Welcome to the VHDL Code Converter! A tool that helps you implement basic VHDL components"
         + "\n"
-        + "Using just the information you provide, this program provides a VHDL implementation of your component."
-        + "\n"
+        + "Using just the information provided, this program provides a VHDL implementation of you component."
         + "\n"
         + "\n"
         + "To start, sometimes working with this program can make this directory pretty messy because of the text files generated."
@@ -20,21 +29,34 @@ def main():
 
     # Gives user option to clean up directory
     del_files = input(
-        'If you would like to delete all files that end with .txt in this directory, type "Y", if not, hit "enter"'
+        'If you would like to delete some files that end with .txt in this directory, type "Y", if not, hit "enter"'
         + "\n"
         + "Enter choice here: "
     )
     if del_files == "Y":
+        files_list = []
+        file_input = ""
+        print("\nThese are the current files in this directory: \n")
+        for file in os.listdir(os.getcwd()):
+            print(file[:-4])
+        print(
+            'One by one, please enter the headers of the .txt of the files you would like to save. Type ".." to not save anymore.'
+        )
+        while file_input != "..":
+            file_input = input("Enter file name: ")
+            files_list.append(f"{file_input}.txt")
         for item in os.listdir(os.getcwd()):
-            if item.endswith(".txt"):
+            if item.endswith(".txt") and (item not in files_list):
                 os.remove(os.path.join(os.getcwd(), item))
+        loading(2)
+        print("\n\nFiles cleared!" + "\n" + "\n")
 
     # Gets the output file ready
     output_file_name = input(
         "What would you like the output file to be called (Do not include .txt): "
     )
 
-    # Creates new ouptut file, and writes to it. If "output_file_name.txt" already exists, it will overwrite it
+    # Creates new output file, and writes to it. If "output_file_name.txt" already exists, it will overwrite it
     with open(output_file_name + ".txt", "w") as f:
 
         # Writes the header
@@ -42,7 +64,7 @@ def main():
 
         # Starts creating the entity
         entity_name = input("What is your entity's name: ")
-        f.write(f"enity {entity_name.upper()} is port(\n")
+        f.write(f"entity {entity_name.upper()} is port(\n")
 
         # List that will later be provided to user so they know which inputs they can use
         input_names_list = []
@@ -123,7 +145,7 @@ def main():
                 output_names.append(output_name)
                 output_names_list.append(output_name)
             output_list.append(
-                f"     {', '.join(output_names)}:      in      {output_type}"
+                f"     {', '.join(output_names)}:      out      {output_type}"
             )
 
         # Write the VHDL formatted inputs and outputs to entity body, closes entity
