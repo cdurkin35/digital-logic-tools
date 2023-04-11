@@ -203,13 +203,13 @@ def main():
             + "\033[1m-- Z=Y(1)*Y(2)'+Y(1)'*Y(2) --\033[0m"
             + "\n"
             + "\n"
-            + 'In this example, Z represents the output, Y1 and Y2 are inputs/signals. The " \' " represents the complement of that signal.'
+            + '- In this example, Z represents the output, Y1 and Y2 are inputs/signals. The " \' " represents the complement of that signal.'
             + "\n"
-            + "If you are inputting a node from a bus, you must use paranthesis to indicate which node it is (This is how VHDL does it)"
+            + "- If you are inputting a node from a bus, you must use paranthesis to indicate which node it is (This is how VHDL does it)"
             + "\n"
-            + 'If you wish to end inputting equations, type "END" and your session will be ended.'
+            + '- If you wish to end inputting equations, type "END" and your session will be ended.'
             + "\n"
-            + "Please only use signals that you have declared earlier to prevent bugs in your VHDL code."
+            + "- Please only use signals that you have declared earlier to prevent bugs in your VHDL code."
             + "\n"
             + "\n"
         )

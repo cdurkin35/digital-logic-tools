@@ -1,0 +1,24 @@
+library ieee; use ieee.std_logic_1164.all;
+entity RALU_CONTROLLER is port(
+     S:                         in      std_logic_vector(1 downto 0);
+     IR:                        in      std_logic_vector(2 downto 0);
+     SF, MSA, MSB:              out      std_logic_vector(1 downto 0);
+     MSC:                       out      std_logic_vector(2 downto 0);
+     IR_LD, PC_INC, PC_LD:      out      std_logic);
+end RALU_CONTROLLER;
+
+architecture behavior of RALU_CONTROLLER is 
+begin
+      SF(1) <= (((not S(1)) and (S(0)) and (not IR(2)) and (not IR(1)) and (not IR(0))) or ((not S(1)) and (S(0)) and (IR(2)) and (not IR(1)) and (IR(0))));
+      SF(0) <= (((not S(1)) and (not S(0))) or ((not S(1)) and (S(0)) and (IR(2)) and (not IR(1)) and (IR(0))));
+      MSA(1) <= (((not S(1)) and (S(0)) and (not IR(2)) and (IR(1)) and (not IR(0))) or ((not S(1)) and (S(0)) and (not IR(2)) and (IR(1)) and (IR(0))) or ((not S(1)) and (S(0)) and (IR(2)) and (not IR(1)) and (not IR(0))));
+      MSA(0) <= (((not S(1))));
+      MSB(1) <= (((S(1))) or ((not S(0))) or ((IR(2))) or ((IR(1))) or ((not IR(0))));
+      MSB(0) <= (((not S(1)) and (S(0)) and (not IR(2)) and (not IR(1)) and (IR(0))));
+      MSC(2) <= (((not S(1)) and (S(0)) and (not IR(2)) and (IR(1)) and (not IR(0))) or ((not S(1)) and (S(0)) and (not IR(2)) and (IR(1)) and (IR(0))) or ((not S(1)) and (S(0)) and (IR(2)) and (not IR(1)) and (not IR(0))));
+      MSC(1) <= (((not S(1)) and (S(0)) and (not IR(2)) and (IR(1)) and (not IR(0))) or ((not S(1)) and (S(0)) and (not IR(2)) and (IR(1)) and (IR(0))));
+      MSC(0) <= (((not S(1)) and (not S(0)) and (not IR(2)) and (IR(1)) and (not IR(0))) or ((not S(1)) and (S(0)) and (IR(2)) and (not IR(1)) and (not IR(0))));
+      IR_LD <= (((not S(1)) and (not S(0))));
+      PC_INC <= (((not S(1)) and (S(0))) or ((S(1)) and (not S(0))));
+      PC_LD <= (((S(1)) and (S(0))));
+end behavior;
