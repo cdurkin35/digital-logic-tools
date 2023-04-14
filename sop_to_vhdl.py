@@ -13,6 +13,10 @@ def loading(t, increment=0.1, dots=3):
         time.sleep(increment)
 
 
+def clear():
+    os.system("clear")
+
+
 def main():
 
     # Welcoming Message
@@ -36,11 +40,13 @@ def main():
     if del_files == "Y":
         files_list = []
         file_input = ""
-        print("\nThese are the current files in this directory: \n")
+        print("\nThese are the current .txt files in this directory: \n")
         for file in os.listdir(os.getcwd()):
-            print(file[:-4])
+            if file.endswith(".txt"):
+                print(file[:-4])
         print(
-            'One by one, please enter the headers of the .txt of the files you would like to save. Type ".." to not save anymore.'
+            "\n"
+            + 'One by one, please enter the headers of the .txt of the files you would like to save. Type ".." to not save anymore.'
         )
         while file_input != "..":
             file_input = input("Enter file name: ")
@@ -104,7 +110,7 @@ def main():
                 input_names.append(input_name)
                 input_names_list.append(input_name)
             input_list.append(
-                f"     {', '.join(input_names)}:      in      {input_type}"
+                f"     {', '.join(input_names)}:      in       {input_type}"
             )
 
         # List that will later be provided to user so they know which outputs they have to define
@@ -191,7 +197,7 @@ def main():
         for signal in signals_list:
             value = input(f"What should signal {signal} be set to: ")
             f.write(f"{signal} <= {value};\n")
-
+        clear()
         # Get's ready for equation inputs
         print(
             "\n"
