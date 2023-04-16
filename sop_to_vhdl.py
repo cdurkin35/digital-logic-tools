@@ -1,6 +1,39 @@
 # os package is used to delete unused ".txt" files, allowing the program to declutter itself
 import os
 import time
+import csv
+
+STANDARD_TAB_SPACING = "            "
+
+
+def eq_from_truth_table(name):
+    equations = []
+    with open(f"{name}.csv", "r") as f:
+        csv_list = list(csv.reader(f))
+        output_variables = []
+        for i in range(len((csv_list[0]))):
+            if csv_list[0][i].strip() == "O":
+                output_variables.append(csv_list[1][i].strip())
+            else:
+                output_variables.append("")
+        last_input_index = 0
+        for index, output in enumerate(output_variables):
+            if output == "":
+                last_input_index += 1
+                continue
+            output_minterms = []
+            for i in range(2, len(csv_list)):
+                if csv_list[i][index].strip() == "1":
+                    min_term_elements = []
+                    for j in range(0, last_input_index):
+                        if csv_list[i][j].strip() == "1":
+                            min_term_elements.append(csv_list[1][j])
+                        elif csv_list[i][j].strip() == "0":
+                            min_term_elements.append(csv_list[1][j] + "'")
+                    output_minterms.append("*".join(min_term_elements))
+            output_equation = output + " = " + "+".join(output_minterms)
+            equations.append(output_equation)
+    return equations
 
 
 def loading(t, increment=0.1, dots=3):
@@ -19,49 +52,22 @@ def clear():
 
 def main():
 
+    clear()
     # Welcoming Message
     print(
         "\n"
         + "Welcome to the VHDL Code Converter! A tool that helps you implement basic VHDL components"
         + "\n"
-        + "Using just the information provided, this program provides a VHDL implementation of you component."
+        + "Using just a completed truth table, along with some additional information, a basic VHDL component is made!"
         + "\n"
-        + "\n"
-        + "To start, sometimes working with this program can make this directory pretty messy because of the text files generated."
         + "\n"
     )
-
-    # Gives user option to clean up directory
-    del_files = input(
-        'If you would like to delete some files that end with .txt in this directory, type "Y", if not, hit "enter"'
-        + "\n"
-        + "Enter choice here: "
-    )
-    if del_files == "Y":
-        files_list = []
-        file_input = ""
-        print("\nThese are the current .txt files in this directory: \n")
-        for file in os.listdir(os.getcwd()):
-            if file.endswith(".txt"):
-                print(file[:-4])
-        print(
-            "\n"
-            + 'One by one, please enter the headers of the .txt of the files you would like to save. Type ".." to not save anymore.'
-        )
-        while file_input != "..":
-            file_input = input("Enter file name: ")
-            files_list.append(f"{file_input}.txt")
-        for item in os.listdir(os.getcwd()):
-            if item.endswith(".txt") and (item not in files_list):
-                os.remove(os.path.join(os.getcwd(), item))
-        loading(2)
-        print("\n\nFiles cleared!" + "\n" + "\n")
 
     # Gets the output file ready
     output_file_name = input(
         "What would you like the output file to be called (Do not include .txt): "
     )
-
+    clear()
     # Creates new output file, and writes to it. If "output_file_name.txt" already exists, it will overwrite it
     with open(output_file_name + ".txt", "w") as f:
 
@@ -110,9 +116,11 @@ def main():
                 input_names.append(input_name)
                 input_names_list.append(input_name)
             input_list.append(
-                f"     {', '.join(input_names)}:      in       {input_type}"
+                f"     {', '.join(input_names)}:"
+                + STANDARD_TAB_SPACING[len(", ".join(input_names)) :]
+                + f"in       {input_type}"
             )
-
+        clear()
         # List that will later be provided to user so they know which outputs they have to define
         output_names_list = []
 
@@ -151,19 +159,20 @@ def main():
                 output_names.append(output_name)
                 output_names_list.append(output_name)
             output_list.append(
-                f"     {', '.join(output_names)}:      out      {output_type}"
+                f"     {', '.join(output_names)}:"
+                + STANDARD_TAB_SPACING[len(", ".join(output_names)) :]
+                + f"out      {output_type}"
             )
 
         # Write the VHDL formatted inputs and outputs to entity body, closes entity
         write_string = (";\n".join(input_list)) + ";\n" + (";\n".join(output_list))
         f.write(write_string + ");\n" + f"end {entity_name};\n\n")
 
+        clear()
+
         # Creates the header for architecture
         print("Great! The entity is created! Now time for the architecture!")
-        arch_name = input(
-            'What would you like to name the architecture (Usually "behavior" is default): '
-        )
-        f.write(f"architecture {arch_name} of {entity_name} is \n")
+        f.write(f"architecture behavior of {entity_name} is \n")
 
         # Checks if additional signals are necessary
         signals = bool(
@@ -199,48 +208,19 @@ def main():
             f.write(f"{signal} <= {value};\n")
         clear()
         # Get's ready for equation inputs
+        truth_table_name = input(
+            "Please enter the name of the .csv file that contains your truth table: "
+        )
         print(
-            "\n"
-            + "Now it is time for the equations!"
-            + "\n"
-            + "Please enter the equations in this format:"
-            + "\n"
-            + "\n"
-            + "\033[1m-- Z=Y(1)*Y(2)'+Y(1)'*Y(2) --\033[0m"
-            + "\n"
-            + "\n"
-            + '- In this example, Z represents the output, Y1 and Y2 are inputs/signals. The " \' " represents the complement of that signal.'
-            + "\n"
-            + "- If you are inputting a node from a bus, you must use paranthesis to indicate which node it is (This is how VHDL does it)"
-            + "\n"
-            + '- If you wish to end inputting equations, type "END" and your session will be ended.'
-            + "\n"
-            + "- Please only use signals that you have declared earlier to prevent bugs in your VHDL code."
-            + "\n"
-            + "\n"
+            "Now, using the truth table provided, I will determine the SOP equations needed for your component!"
         )
 
         # Provides user with the inputs and outputs that they have already declared
-        print(
-            f"You have the following inputs: {', '.join(input_names_list)}"
-            + "\n"
-            + f"You have the following outputs: {', '.join(output_names_list)}"
-            + "\n"
-        )
-
+        truth_table_equations = eq_from_truth_table(truth_table_name)
         # Base variables
-        input_equation = ""
         vhdl_equation = ""
-
         # Will continue until the user types "END"
-        while input_equation != "END":
-
-            # Gets the overall SOP equation, with output
-            input_equation = input("Please enter the equation : ")
-
-            # Ends loop if user requests
-            if input_equation == "END":
-                break
+        for input_equation in truth_table_equations:
 
             # Splits the equation into output and inputs
             answer_side, equation_side = input_equation.split("=")
@@ -303,6 +283,8 @@ def main():
             # Writes the equation to the text file
             f.write(f"      {vhdl_equation}\n")
 
+        loading(2)
+        clear()
         # Checks to see if there are any additional equations that aren't SOP that need to be added
         more_eq = bool(
             int(
@@ -333,7 +315,7 @@ def main():
                 f.write(equation + "\n")
 
         # Ends the architecture body, thus finishing the entire VHDL code
-        f.write(f"end {arch_name};")
+        f.write(f"end behavior;")
 
     print(
         "\n"
