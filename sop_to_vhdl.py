@@ -50,7 +50,6 @@ def clear():
 
 
 def main():
-
     clear()
     # Welcoming Message
     print(
@@ -69,7 +68,6 @@ def main():
     clear()
     # Creates new output file, and writes to it. If "output_file_name.txt" already exists, it will overwrite it
     with open(output_file_name + ".txt", "w") as f:
-
         # Writes the header
         f.write("library ieee; use ieee.std_logic_1164.all;\n")
 
@@ -220,7 +218,6 @@ def main():
         vhdl_equation = ""
         # Will continue until the user types "END"
         for input_equation in truth_table_equations:
-
             # Splits the equation into output and inputs
             answer_side, equation_side = input_equation.split("=")
 
@@ -239,7 +236,6 @@ def main():
 
             # Iterates through each minterm in the SOP equation
             for min_term in min_terms:
-
                 # Separates each minterm into just the raw variables
                 min_terms_split = min_term.split("*")
 
@@ -251,7 +247,6 @@ def main():
 
                 # Iterates through the variables in each midterm
                 for var in min_terms_split:
-
                     # Gets proper VHDL code depending on if the variable is negated or not
                     if var[-1] == "'":
                         term_list.append("(not " + var[:-1] + ")")
@@ -308,13 +303,13 @@ def main():
                 + "Y <= B when (Sel = '1') else A;"
                 + "\n"
             )
-            ex_eq_cnt = input("How many more equations do you want to input: ")
+            ex_eq_cnt = int(input("How many more equations do you want to input: "))
             for i in range(ex_eq_cnt):
                 equation = input("Please enter the equation: ")
                 f.write(equation + "\n")
 
         # Ends the architecture body, thus finishing the entire VHDL code
-        f.write(f"end behavior;")
+        f.write("end behavior;")
 
     print(
         "\n"
